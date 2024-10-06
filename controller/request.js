@@ -13,7 +13,6 @@ export const nonStreamRequest = async (req, res, nonStreamRequestRoute) => {
   const options = {headers: headers}
 
   try {
-    console.log(headers)
     const needleRes = await needle(req.method, targetUrl, req.body, options);
     return res.status(needleRes.statusCode).json(needleRes.body);
   } catch (e) {

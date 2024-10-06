@@ -28,11 +28,11 @@ export const chatCompletions = async (req, res) => {
         }
         isStreaming = true;
         res.writeHead(statusCode, {
-          'Content-Type': 'text/event-stream',
-          'Cache-Control': 'no-cache',
-          'Connection': 'keep-alive',
+          'Content-Type': responseHeaders['content-type'] || 'text/event-stream',
+          'Cache-Control': responseHeaders['cache-control'] || 'no-cache',
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Credentials': true,
+          'Access-Control-Allow-Credentials': responseHeaders['access-control-allow-credentials'] || true,
+          'Strict-Transport-Security': responseHeaders['strict-transport-security'] || '',
         });
       });
 
