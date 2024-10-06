@@ -6,10 +6,10 @@ import { chatCompletionsRoute } from "../constants.js";
 export const chatCompletions = async (req, res) => {
   const targetUrl = process.env.API_BASE_URL + chatCompletionsRoute;
   const headers = {...req.headers};
+  delete headers.host;
 
   if (process.env.NODE_ENV === "development") {
     console.log(`Forwarding request to: ${targetUrl}`)
-    delete headers.host;
   }
 
   const options = {headers: headers}
