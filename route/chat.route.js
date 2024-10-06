@@ -1,7 +1,7 @@
 import express from 'express'
 
-import {chatCompletionsRoute, completionsRoute} from "../constants.js";
-import {chatCompletions} from "../controller/completions.controller.js";
+import { chatCompletionsRoute, completionsRoute } from "../constants.js";
+import { chatCompletions } from "../controller/chat.controller.js";
 
 
 const router = express.Router()
