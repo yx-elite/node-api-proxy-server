@@ -5,6 +5,7 @@ import morgan from 'morgan';
 
 import statusRoute from "./route/status.route.js";
 import completionsRoute from "./route/completions.route.js"
+import imagesRoute from "./route/images.route.js";
 
 dotenv.config();
 
@@ -22,5 +23,6 @@ app.use(morgan(':method :url :status - :response-time ms'));
 
 app.use('/api', statusRoute);
 app.use('/api', completionsRoute);
+app.use('/api', imagesRoute);
 
 app.listen(PORT, () => console.log(`Server running on Port ${PORT}`));
