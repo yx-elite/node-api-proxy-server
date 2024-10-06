@@ -24,6 +24,7 @@ app.use(express.json())
 // Add logging middleware for request-response time and status
 app.use(morgan(':method :url :status - :response-time ms'));
 
+app.get('/', statusRouter)
 app.use('/api', statusRouter);
 app.use('/api', chatRouter);
 app.use('/api', imagesRouter);
