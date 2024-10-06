@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
 
-import proxyRoute from "./route/proxy.route.js";
+import statusRoute from "./route/status.route.js";
+import completionsRoute from "./route/completions.route.js"
 
 dotenv.config();
 
@@ -16,9 +17,10 @@ app.use(cors())
 
 app.use(express.json())
 
-// Logging middleware for request-response time and status
+// Add logging middleware for request-response time and status
 app.use(morgan(':method :url :status - :response-time ms'));
 
-app.use('/api', proxyRoute);
+app.use('/api', statusRoute);
+app.use('/api', completionsRoute);
 
-app.listen(PORT, () => console.log(`Server running at https://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on Port ${PORT}`));
