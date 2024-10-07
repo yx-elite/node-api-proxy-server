@@ -18,11 +18,11 @@ const PORT = process.env.PORT || 5000;
 // Apply CORS middleware
 app.use(cors())
 
-// Parse JSON bodies
-app.use(express.json())
+// Parse JSON bodies with increased limit
+app.use(express.json({ limit: '50mb' }))
 
-// Parse URL-encoded bodies
-app.use(express.urlencoded({ extended: true }))
+// Parse URL-encoded bodies with increased limit
+app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 
 // Add logging middleware for request-response time and status
 app.use(morgan(':method :url :status - :response-time ms'));
