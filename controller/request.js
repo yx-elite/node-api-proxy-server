@@ -85,7 +85,7 @@ export const formDataRequest = async (req, res, requestRoute) => {
   delete headers.host;
 
   if (process.env.NODE_ENV === "development") {
-    console.log(`Forwarding form-data request to: ${targetUrl}`);
+    console.log(`Forwarding request to: ${targetUrl}`);
     console.log('Request body:', req.body);
     console.log('Request files:', req.files);
   }
@@ -137,7 +137,7 @@ export const ttsRequest = async (req, res, requestRoute) => {
   delete headers.host;
 
   if (process.env.NODE_ENV === "development") {
-    console.log(`Forwarding TTS request to: ${targetUrl}`);
+    console.log(`Forwarding request to: ${targetUrl}`);
     console.log('Request body:', req.body);
   }
 
@@ -152,18 +152,15 @@ export const ttsRequest = async (req, res, requestRoute) => {
 
     const needleRes = await needle('post', targetUrl, req.body, options);
 
-    // Check if the response is successful
-    if (needleRes.statusCode === 200) {
-      // Set appropriate headers for audio file
-      res.setHeader('Content-Type', 'audio/mpeg');
-      res.setHeader('Content-Disposition', 'attachment; filename="speech.mp3"');
-      
-      // Send the audio buffer
-      res.send(needleRes.body);
-    } else {
-      // If there's an error, send the error response
-      res.status(needleRes.statusCode).json(needleRes.body);
-    }
+    res.writeHead(needleRes.statusCode, {
+      'Content-Type': needleRes.headers['content-type'] || 'audio/mpeg',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': needleRes.headers['access-control-allow-credentials'] || true,
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
+    });
+
+    // Send the audio buffer
+    res.end(needleRes.body);
 
   } catch (e) {
     console.error('Error in ttsRequest:', e);
