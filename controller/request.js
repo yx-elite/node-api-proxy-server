@@ -1,5 +1,4 @@
 import needle from "needle";
-import {chatCompletionsRoute} from "../constants.js";
 
 
 export const nonStreamRequest = async (req, res, requestRoute) => {
@@ -26,7 +25,7 @@ export const nonStreamRequest = async (req, res, requestRoute) => {
     res.end(JSON.stringify(needleRes.body));
 
   } catch (e) {
-    console.error(e);
+    console.error("Error in nonStreamRequest:", e);
     return res.status(500).json({ "success": false, "error": "Internal server error" });
   }
 }
@@ -71,11 +70,63 @@ export const streamRequest = async (req, res, requestRoute) => {
 
     // Handle errors on streaming
     needleRes.on('error', (error) => {
-      console.error('Request Error:', error);
+      console.error('Error in streamRequest:', error);
       res.status(500).json({ "success": false, "error": "Error making request" });
     });
   } catch (e) {
     console.error(e);
     return res.status(500).json({ "success": false, "error": "Internal server error" });
+  }
+}
+
+export const formDataRequest = async (req, res, requestRoute) => {
+  const targetUrl = process.env.API_BASE_URL + requestRoute;
+  const headers = {...req.headers};
+  delete headers.host;
+
+  if (process.env.NODE_ENV === "development") {
+    console.log(`Forwarding form-data request to: ${targetUrl}`);
+    console.log('Request body:', req.body);
+    console.log('Request files:', req.files);
+  }
+
+  try {
+    const formData = {};
+
+    for (const [key, value] of Object.entries(req.body)) {
+      formData[key] = value;
+    }
+
+    if (req.files && req.files.length > 0) {
+      const file = req.files[0];
+      formData.file = {
+        buffer: file.buffer,
+        filename: file.originalname,
+        content_type: file.mimetype
+      };
+    }
+
+    const options = {
+      multipart: true,
+      headers: {
+        ...headers,
+        'Content-Type': 'multipart/form-data'
+      }
+    };
+
+    const needleRes = await needle('post', targetUrl, formData, options);
+
+    res.writeHead(needleRes.statusCode, {
+      'Content-Type': needleRes.headers['content-type'] || 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': needleRes.headers['access-control-allow-credentials'] || true,
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
+    });
+
+    res.end(JSON.stringify(needleRes.body));
+
+  } catch (e) {
+    console.error('Error in formDataRequest:', e);
+    return res.status(500).json({ "success": false, "error": "Internal server error", "details": e.message });
   }
 }

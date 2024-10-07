@@ -9,7 +9,6 @@ import imagesRouter from "./route/images.route.js";
 import embeddingsRouter from "./route/embeddings.route.js"
 import audioRouter from "./route/audio.route.js"
 
-
 dotenv.config();
 
 const app = express();
@@ -19,7 +18,11 @@ const PORT = process.env.PORT || 5000;
 // Apply CORS middleware
 app.use(cors())
 
+// Parse JSON bodies
 app.use(express.json())
+
+// Parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true }))
 
 // Add logging middleware for request-response time and status
 app.use(morgan(':method :url :status - :response-time ms'));
