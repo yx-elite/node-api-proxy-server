@@ -26,7 +26,7 @@ export const nonStreamRequest = async (req, res, requestRoute) => {
 
   } catch (e) {
     console.error("Error in nonStreamRequest:", e);
-    return res.status(500).json({ "success": false, "error": "Internal server error" });
+    return res.status(500).json({ "success": false, "error": "Internal server error", "details": e.message });
   }
 }
 
@@ -75,7 +75,7 @@ export const streamRequest = async (req, res, requestRoute) => {
     });
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ "success": false, "error": "Internal server error" });
+    return res.status(500).json({ "success": false, "error": "Internal server error", "details": e.message });
   }
 }
 
@@ -127,6 +127,46 @@ export const formDataRequest = async (req, res, requestRoute) => {
 
   } catch (e) {
     console.error('Error in formDataRequest:', e);
+    return res.status(500).json({ "success": false, "error": "Internal server error", "details": e.message });
+  }
+}
+
+export const ttsRequest = async (req, res, requestRoute) => {
+  const targetUrl = process.env.API_BASE_URL + requestRoute;
+  const headers = {...req.headers};
+  delete headers.host;
+
+  if (process.env.NODE_ENV === "development") {
+    console.log(`Forwarding TTS request to: ${targetUrl}`);
+    console.log('Request body:', req.body);
+  }
+
+  try {
+    const options = {
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json'
+      },
+      response_type: 'buffer'  // This is important for handling binary data
+    };
+
+    const needleRes = await needle('post', targetUrl, req.body, options);
+
+    // Check if the response is successful
+    if (needleRes.statusCode === 200) {
+      // Set appropriate headers for audio file
+      res.setHeader('Content-Type', 'audio/mpeg');
+      res.setHeader('Content-Disposition', 'attachment; filename="speech.mp3"');
+      
+      // Send the audio buffer
+      res.send(needleRes.body);
+    } else {
+      // If there's an error, send the error response
+      res.status(needleRes.statusCode).json(needleRes.body);
+    }
+
+  } catch (e) {
+    console.error('Error in ttsRequest:', e);
     return res.status(500).json({ "success": false, "error": "Internal server error", "details": e.message });
   }
 }
