@@ -1,4 +1,4 @@
-import needle from "needle";
+import axios from "axios";
 
 
 export const proxyStatus = async (req, res) => {
@@ -7,9 +7,13 @@ export const proxyStatus = async (req, res) => {
   }
 
   try {
-    const needleRes = await needle(req.method, process.env.API_BASE_URL);
-    needleRes.statusCode === 200 ? (
-      res.status(needleRes.statusCode).json({
+    const axiosRes = await axios({
+      method: req.method,
+      url: process.env.API_BASE_URL
+    });
+
+    axiosRes.status === 200 ? (
+      res.status(axiosRes.status).json({
         "success": true,
         "message": [{
           "status": "Active",
@@ -17,7 +21,7 @@ export const proxyStatus = async (req, res) => {
         }]
       })
     ) : (
-      res.status(needleRes.statusCode).json({
+      res.status(axiosRes.status).json({
         "success": false,
         "message": [{
           "status": "Inactive",
