@@ -6,8 +6,8 @@ export const statusRoute = '/status'
 export const embeddingsRoute = '/v1/embeddings'
 
 // chat
-export const chatCompletionsRoute = '/v1/chat/completions';
 export const completionsRoute = '/v1/completions'
+export const chatCompletionsRoute = '/v1/chat/completions';
 
 // images
 export const imageGenerationsRoute = '/v1/images/generations'    // Dall-e
