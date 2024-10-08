@@ -7,7 +7,7 @@ export const nonStreamRequest = async (req, res, requestRoute) => {
   delete headers.host;
 
   if (process.env.NODE_ENV === "development") {
-    console.log(`Forwarding request to: ${targetUrl}`)
+    console.log(`Forwarding nonStreamRequest to: ${targetUrl}`)
   }
 
   const options = {headers: headers}
@@ -36,7 +36,7 @@ export const streamRequest = async (req, res, requestRoute) => {
   delete headers.host;
 
   if (process.env.NODE_ENV === "development") {
-    console.log(`Forwarding request to: ${targetUrl}`)
+    console.log(`Forwarding streamRequest to: ${targetUrl}`)
   }
 
   const options = {headers: headers}
@@ -79,16 +79,10 @@ export const streamRequest = async (req, res, requestRoute) => {
   }
 }
 
-export const formDataRequest = async (req, res, requestRoute) => {
+export const sttRequest = async (req, res, requestRoute) => {
   const targetUrl = process.env.API_BASE_URL + requestRoute;
   const headers = {...req.headers};
   delete headers.host;
-
-  if (process.env.NODE_ENV === "development") {
-    console.log(`Forwarding request to: ${targetUrl}`);
-    console.log('Request body:', req.body);
-    console.log('Request files:', req.files);
-  }
 
   try {
     const formData = {};
@@ -104,6 +98,11 @@ export const formDataRequest = async (req, res, requestRoute) => {
         filename: file.originalname,
         content_type: file.mimetype
       };
+    }
+
+    if (process.env.NODE_ENV === "development") {
+      console.log(`Forwarding sttRequest to: ${targetUrl}`);
+      console.log('Request body:', formData);
     }
 
     const options = {
@@ -126,7 +125,7 @@ export const formDataRequest = async (req, res, requestRoute) => {
     res.end(JSON.stringify(needleRes.body));
 
   } catch (e) {
-    console.error('Error in formDataRequest:', e);
+    console.error('Error in sttRequest:', e);
     return res.status(500).json({ "success": false, "error": "Internal server error", "details": e.message });
   }
 }
@@ -137,7 +136,7 @@ export const ttsRequest = async (req, res, requestRoute) => {
   delete headers.host;
 
   if (process.env.NODE_ENV === "development") {
-    console.log(`Forwarding request to: ${targetUrl}`);
+    console.log(`Forwarding ttsRequest to: ${targetUrl}`);
     console.log('Request body:', req.body);
   }
 
